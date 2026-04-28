@@ -1,0 +1,246 @@
+// ================= ADMIN EMAIL LIST =================
+// These emails are allowed to access admin page
+const adminEmails = [
+    "roshan1256458@gmail.com",
+    "roshan125658@gmail.com"
+];
+
+
+// ================= REGISTER FUNCTION =================
+// Used on register page to create new user
+function register() {
+    let email = document.getElementById("regEmail").value.trim().toLowerCase();
+    let pass = document.getElementById("regPass").value;
+
+    // Check empty fields
+    if(email === "" || pass === "") {
+        alert("Please fill all fields");
+        return;
+    }
+
+    // Check if already registered
+    if(localStorage.getItem(email)) {
+        alert("Email already exists");
+        return;
+    }
+
+    // Save email & password in localStorage
+    localStorage.setItem(email, pass);
+
+    alert("Registered Successfully");
+    window.location.href = "index.html"; // go to login page
+}
+
+
+// ================= LOGIN FUNCTION =================
+// Used to login user
+function login() {
+    let email = document.getElementById("loginEmail").value.trim().toLowerCase();
+    let pass = document.getElementById("loginPass").value;
+
+    let savedPass = localStorage.getItem(email);
+
+    // Check login
+    if(savedPass === pass) {
+        localStorage.setItem("currentUser", email); // save current user
+        window.location.href = "dashboard.html";
+    } else {
+        alert("Invalid Login");
+    }
+}
+
+
+// ================= LOGOUT =================
+// Remove user session
+function logout() {
+    localStorage.removeItem("currentUser");
+    window.location.href = "index.html";
+}
+
+
+// ================= ADMIN BUTTON CONTROL =================
+// Runs only on dashboard page
+if(window.location.pathname.includes("dashboard.html")) {
+
+    let user = localStorage.getItem("currentUser");
+
+    // If not logged in → go back
+    if(!user){
+        window.location.href = "index.html";
+    }
+
+    // Hide admin button if not admin
+    if(!adminEmails.includes(user)){
+        let adminBtn = document.getElementById("adminBtn");
+        if(adminBtn){
+            adminBtn.style.display = "none";
+        }
+    }
+}
+
+
+// ================= ADMIN PAGE PROTECTION =================
+// Only admin can open admin.html
+if (window.location.pathname.includes("admin.html")) {
+    
+    let user = localStorage.getItem("currentUser");
+
+    if (!adminEmails.includes(user)) {
+        alert("Access Denied!");
+        window.location.href = "dashboard.html";
+    }
+}
+
+
+// ================= DATA FUNCTIONS =================
+
+// Get books from localStorage
+function getBooks() {
+    return JSON.parse(localStorage.getItem("books")) || [];
+}
+
+// Get issued books
+function getIssued() {
+    return JSON.parse(localStorage.getItem("issued")) || [];
+}
+
+// Save books
+function saveBooks(data) {
+    localStorage.setItem("books", JSON.stringify(data));
+}
+
+// Save issued books
+function saveIssued(data) {
+    localStorage.setItem("issued", JSON.stringify(data));
+}
+
+
+// ================= ADMIN FUNCTIONS =================
+// ONLY for admin.html page
+
+function addBook() {
+    // Get book name
+    let name = document.getElementById("bookName").value;
+
+    if (name === "") return alert("Enter book name");
+
+    let books = getBooks();
+
+    // Add new book (string format)
+    books.push(name);
+
+    saveBooks(books);
+
+    alert("Book Added");
+}
+
+function deleteBook() {
+    let name = document.getElementById("deleteBook").value;
+
+    let books = getBooks();
+
+    // Remove book
+    books = books.filter(b => b !== name);
+
+    saveBooks(books);
+
+    alert("Book Deleted");
+}
+
+
+// ================= DASHBOARD FUNCTIONS =================
+// ONLY for dashboard.html page
+
+function loadBooks() {
+    let books = getBooks();
+    let list = document.getElementById("bookList");
+
+    if (!list) return;
+
+    list.innerHTML = "";
+
+    books.forEach((book, i) => {
+        let li = document.createElement("li");
+
+        li.innerHTML = `
+            ${book}
+            <button onclick="issueBook(${i})">Issue</button>
+        `;
+
+        list.appendChild(li);
+    });
+}
+
+function loadIssued() {
+    let issued = getIssued();
+    let list = document.getElementById("issuedList");
+
+    if (!list) return;
+
+    list.innerHTML = "";
+
+    issued.forEach((book, i) => {
+        let li = document.createElement("li");
+
+        li.innerHTML = `
+            ${book}
+            <button onclick="returnBook(${i})">Return</button>
+        `;
+
+        list.appendChild(li);
+    });
+}
+
+
+// ================= ISSUE BOOK =================
+function issueBook(i) {
+    let books = getBooks();
+    let issued = getIssued();
+
+    // Remove from books
+    let book = books.splice(i, 1)[0];
+
+    // Add to issued
+    issued.push(book);
+
+    saveBooks(books);
+    saveIssued(issued);
+
+    loadBooks();
+    loadIssued();
+}
+
+
+// ================= RETURN BOOK =================
+function returnBook(i) {
+    let books = getBooks();
+    let issued = getIssued();
+
+    let book = issued.splice(i, 1)[0];
+
+    books.push(book);
+
+    saveBooks(books);
+    saveIssued(issued);
+
+    loadBooks();
+    loadIssued();
+}
+
+
+// ================= PAGE LOAD =================
+
+// Dashboard page load
+if (window.location.pathname.includes("dashboard.html")) {
+    window.onload = function () {
+        loadBooks();
+        loadIssued();
+    };
+}
+
+// Admin page load (no loadBooks here)
+if (window.location.pathname.includes("admin.html")) {
+    window.onload = function () {
+        // Admin page only handles add/delete
+    };
+}
