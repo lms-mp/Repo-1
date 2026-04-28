@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Library Management - Registration</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #4e73df, #1cc88a);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: lightblue;
+            width: 380px;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0px 0px 20px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            font-size: 26px;
+            color: #333;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 15px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 12px;
+            background-color: #f6c23e;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #e0a800;
+        }
+
+        a {
+            text-decoration: none;
+            color: #4e73df;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>Library Registration</h2>
+
+    <input type="text" id="name" placeholder="Enter Name">
+    <input type="text" id="roll" placeholder="Enter Roll Number">
+    <input type="email" id="email" placeholder="Enter Email">
+    <input type="password" id="password" placeholder="Enter Password">
+
+    <button onclick="register()">Register</button>
+
+    <p>Already Registered? <a href="login.html">Login</a></p>
+</div>
+
+<script>
+function register() {
+
+    let name = document.getElementById("name").value;
+    let roll = document.getElementById("roll").value;
+    let email = document.getElementById("email").value;
+    let password = document.getElementById("password").value;
+
+    if(name=="" || roll=="" || email=="" || password==""){
+        alert("Please fill all fields");
+        return;
+    }
+
+    let users = JSON.parse(localStorage.getItem("users")) || [];
+
+    users.push({
+        name: name,
+        roll: roll,
+        email: email,
+        password: password
+    });
+
+    localStorage.setItem("users", JSON.stringify(users));
+
+    alert("Registration Successful!");
+    window.location.href = "login.html";
+}
+</script>
+
+<script>
+function register(){
+
+    let name = document.getElementById("name").value;
+    let roll = document.getElementById("roll").value;
+
+    localStorage.setItem("name", name);
+    localStorage.setItem("roll", roll);
+
+    alert("Registered Successfully");
+
+}
+</script>
+
+</body>
+</html>

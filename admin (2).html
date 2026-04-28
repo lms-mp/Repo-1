@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin - Library Management</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f6f9;
+}
+
+header {
+  background: #2c3e50;
+  color: white;
+  padding: 15px;
+  text-align: center;
+  font-size: 20px;
+}
+
+.container {
+  padding: 15px;
+  overflow-x: auto; /* ✅ FIX */
+}
+
+.card {
+  background: white;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+input {
+  padding: 10px;
+  margin: 5px 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+button {
+  padding: 8px 10px;
+  border: none;
+  background: #3498db;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+button:hover {
+  background: #2980b9;
+}
+
+/* ✅ TABLE FIX */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  table-layout: fixed;
+}
+
+th, td {
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+  word-wrap: break-word;
+  font-size: 13px;
+}
+
+th {
+  background: #34495e;
+  color: white;
+}
+
+td button {
+  width: 100%; /* ✅ button inside box */
+}
+
+.status-available {
+  color: green;
+  font-weight: bold;
+}
+
+.status-issued {
+  color: red;
+  font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+📚 Admin Panel - Library Management
+</header>
+
+<div class="container">
+
+<div class="card">
+<h3>Add Book</h3>
+<input type="text" id="bookName" placeholder="Book Name">
+<input type="text" id="authorName" placeholder="Author Name">
+<button onclick="addBook()">Add Book</button>
+</div>
+
+<div class="card">
+<h3>Book List</h3>
+<table>
+<thead>
+<tr>
+<th>Book</th>
+<th>Author</th>
+<th>Status</th>
+<th>Student</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody id="bookTable"></tbody>
+</table>
+</div>
+
+</div>
+
+<script>
+
+// Load Data
+let books = JSON.parse(localStorage.getItem("books")) || [];
+
+// Save
+function saveData() {
+  localStorage.setItem("books", JSON.stringify(books));
+}
+
+// Display
+function displayBooks() {
+  let table = document.getElementById("bookTable");
+  table.innerHTML = "";
+
+  books.forEach((book) => {
+    table.innerHTML += `
+      <tr>
+        <td>${book.name}</td>
+        <td>${book.author}</td>
+        <td class="${book.issued ? 'status-issued' : 'status-available'}">
+          ${book.issued ? "Issued" : "Available"}
+        </td>
+        <td>${book.student || "-"}</td>
+        <td>
+          <button onclick="deleteBook(${book.id})">Delete</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+// Add Book
+function addBook() {
+  let name = document.getElementById("bookName").value;
+  let author = document.getElementById("authorName").value;
+
+  if (name === "" || author === "") {
+    alert("Please fill all fields");
+    return;
+  }
+
+  books.push({
+    id: Date.now(),
+    name: name,
+    author: author,
+    issued: false,
+    student: ""
+  });
+
+  saveData();
+  displayBooks();
+
+  document.getElementById("bookName").value = "";
+  document.getElementById("authorName").value = "";
+}
+
+// Delete
+function deleteBook(id) {
+  books = books.filter(b => b.id !== id);
+  saveData();
+  displayBooks();
+}
+
+// Start
+displayBooks();
+
+</script>
+
+</body>
+</html>

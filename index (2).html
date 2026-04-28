@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Student Login</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial;
+    background:linear-gradient(135deg,#00c6ff,#0072ff);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+.login-box{
+    background:lightblue;
+    padding:25px;
+    border-radius:10px;
+    width:320px;
+    text-align:center;
+}
+
+h2{
+    margin-bottom:20px;
+}
+
+input{
+    width:90%;
+    padding:8px;
+    margin:10px 0;
+}
+
+button{
+    width:100%;
+    padding:8px;
+    background:#28a745;
+    color:lightyellow;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#218838;
+}
+</style>
+</head>
+
+<body>
+
+<div class="login-box">
+
+    <h2>Student Login</h2>
+
+    <input type="text" id="email" placeholder="Enter Email OR Roll Number">
+
+    <input type="password" id="password" placeholder="Enter Password">
+
+    <button onclick="login()">Login</button>
+
+</div>
+
+<script>
+
+function login(){
+
+    let email = document.getElementById("email").value.trim();
+    let password = document.getElementById("password").value.trim();
+
+    if(email === "" || password === ""){
+        alert("Please fill all fields");
+        return;
+    }
+
+    // Save student data
+    let user = {
+        id: email,
+        role: "student"
+    };
+
+    localStorage.setItem("currentUser", JSON.stringify(user));
+
+    alert("Login Successful");
+
+    window.location.href = "dashboard.html";
+}
+
+</script>
+
+</body>
+</html>
